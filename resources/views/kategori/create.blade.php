@@ -1,127 +1,101 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Kategori - ReWear</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7f0;
-            color: #30392d;
-        }
+@section('title', 'Tambah Kategori')
 
-        .container {
-            max-width: 650px;
-            margin: 70px auto;
-            background: white;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
+@section('content')
 
-        h2 {
-            color: #526b43;
-            margin-bottom: 10px;
-        }
+<div class="max-w-3xl mx-auto space-y-6">
 
-        p {
-            color: #777;
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #405536;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #dce4d5;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 15px;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #526b43;
-        }
-
-        .simpan {
-            background: #526b43;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .kembali {
-            display: inline-block;
-            background: #e5ead9;
-            color: #405536;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            margin-right: 8px;
-        }
-
-        .error {
-            color: #b83232;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h2>+ Tambah Kategori</h2>
-    <p>Tambahkan kategori produk fashion baru ke ReWear.</p>
-
-    @if($errors->any())
-        <div class="error">
-            @foreach($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
-        </div>
-    @endif
-
-    <form action="{{ route('kategori.store') }}" method="POST">
-        @csrf
-
-        <label>Nama Kategori</label>
-
-        <input
-            type="text"
-            name="nama_kategori"
-            placeholder="Contoh: Atasan, Celana, Dress"
-            value="{{ old('nama_kategori') }}"
-            required
-        >
-
-        <a href="{{ route('kategori.index') }}" class="kembali">
-            Kembali
+    <div>
+        <a href="{{ route('kategori.index') }}"
+           class="text-sm text-gray-500 hover:text-rewear-primary">
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            Kembali ke Kategori
         </a>
 
-        <button type="submit" class="simpan">
-            Simpan Kategori
-        </button>
-    </form>
+        <h1 class="text-2xl font-bold text-rewear-dark mt-4">
+            Tambah Kategori
+        </h1>
+
+        <p class="text-sm text-gray-500 mt-1">
+            Tambahkan kategori produk baru ke ReWear.
+        </p>
+    </div>
+
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+
+        <form action="{{ route('kategori.store') }}"
+              method="POST"
+              class="space-y-5">
+
+            @csrf
+
+            <div>
+
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Nama Kategori
+                </label>
+
+                <input type="text"
+                       name="nama_kategori"
+                       value="{{ old('nama_kategori') }}"
+                       placeholder="Contoh: Atasan"
+                       required
+                       maxlength="100"
+                       class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rewear-secondary">
+
+                @error('nama_kategori')
+                    <p class="text-red-500 text-xs mt-2">
+                        {{ $message }}
+                    </p>
+                @enderror
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Deskripsi Kategori
+                </label>
+
+                <textarea name="deskripsi"
+                          rows="5"
+                          placeholder="Masukkan deskripsi kategori..."
+                          class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rewear-secondary">{{ old('deskripsi') }}</textarea>
+
+                @error('deskripsi')
+                    <p class="text-red-500 text-xs mt-2">
+                        {{ $message }}
+                    </p>
+                @enderror
+
+            </div>
+
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-3 border-t border-gray-100">
+
+                <a href="{{ route('kategori.index') }}"
+                   class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium text-center hover:bg-gray-50">
+                    Batal
+                </a>
+
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-lg bg-rewear-primary text-white text-sm font-medium hover:bg-opacity-90">
+
+                    <i class="fa-solid fa-save mr-1"></i>
+                    Simpan Kategori
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
-</body>
-</html>
+@endsection

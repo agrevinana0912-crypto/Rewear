@@ -24,18 +24,26 @@ class Product extends Model
     ];
 
     /**
-     * Relasi ke pemilik produk (User / Penjual)
+     * Relasi ke pemilik produk
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(
+            UserRewear::class,
+            'user_id',
+            'ID_USER'
+        );
     }
 
     /**
-     * Relasi ke item transaksi jika dibeli
+     * Relasi ke item transaksi
      */
     public function transaksiItems()
     {
-        return $this->hasMany(TransaksiItem::class, 'produk_id');
+        return $this->hasMany(
+            TransaksiItem::class,
+            'produk_id',
+            'id'
+        );
     }
 }

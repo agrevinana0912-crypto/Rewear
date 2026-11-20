@@ -9,12 +9,7 @@ class Transaksi extends Model
 {
     use HasFactory;
 
-    // Ganti 'transaksis' di bawah ini dengan nama tabel yang benar di database Anda:
-    // Contoh jika nama tabelnya 'transaksi':
-    protected $table = 'transaksis'; 
-    
-    // Atau jika nama tabelnya 'pesanan':
-    // protected $table = 'pesanan';
+    protected $table = 'transaksis';
 
     protected $guarded = ['id'];
 

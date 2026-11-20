@@ -2,12 +2,34 @@
 
 namespace App\Models;
 
-/**
- * Model Produk (Alias/Ekstensi dari Product)
- * Menjaga kompatibilitas fitur pesanan ReWear yang mengacu ke model Produk
- * agar terhubung langsung ke tabel products.
- */
-class Produk extends Product
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Produk extends Model
 {
-    protected $table = 'products';
+    use HasFactory;
+
+    protected $table = 'produk';
+
+    protected $primaryKey = 'ID_PRODUK';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'ID_USER',
+        'NAMA_PRODUK',
+        'DESKRIPSI',
+        'HARGA',
+        'STOK',
+        'KONDISI',
+    ];
+
+    public function detailPesanan()
+    {
+        return $this->hasMany(
+            DetailPesanan::class,
+            'ID_PRODUK',
+            'ID_PRODUK'
+        );
+    }
 }

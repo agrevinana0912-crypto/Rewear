@@ -2,101 +2,144 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaksi;
-use App\Models\TransaksiItem;
+use App\Models\Pesanan;
+use App\Models\DetailPesanan;
 use App\Models\Produk;
+use App\Models\UserRewear;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
+    // Menampilkan daftar pesanan
     public function index()
     {
-        $pesanans = Transaksi::with(['items.produk'])->latest()->get();
-        
-        $totalPesanan = $pesanans->count();
-        $totalProses = $pesanans->where('status', 'proses')->count();
-        $totalSelesai = $pesanans->where('status', 'selesai')->count();
+        $pesanans = Pesanan::with('userRewear')->orderBy('ID_PESANAN', 'desc')->get();
 
-        return view('pesanan.index', compact('pesanans', 'totalPesanan', 'totalProses', 'totalSelesai'));
+        $totalPesanan = $pesanans->count();
+        $totalProses = $pesanans->where('STATUS', 'Diproses')->count();
+        $totalSelesai = $pesanans->where('STATUS', 'Selesai')->count();
+
+        return view('pesanan.index', compact(
+            'pesanans',
+            'totalPesanan',
+            'totalProses',
+            'totalSelesai'
+        ));
     }
 
+    // Menampilkan form tambah pesanan
     public function create()
     {
+        $users = UserRewear::all();
         $produks = Produk::all();
-        return view('pesanan.create', compact('produks'));
+
+        return view('pesanan.create', compact('users', 'produks'));
     }
 
+    // Menyimpan pesanan baru
     public function store(Request $request)
     {
         $request->validate([
-            'nama_pembeli' => 'required|string|max:255',
-            'produk_id' => 'required',
-            'status' => 'required|string',
+            'ID_USER' => 'required|exists:user_rewear,ID_USER',
+            'ID_PRODUK' => 'required|exists:produk,ID_PRODUK',
+            'JUMLAH' => 'required|integer|min:1',
+            'STATUS' => 'required|in:Diproses,Dikirim,Selesai,Dibatalkan',
         ]);
 
-        $produk = Produk::findOrFail($request->produk_id);
-        $hargaProduk = $produk->harga ?? $produk->price ?? 0;
+        DB::transaction(function () use ($request) {
+            $produk = Produk::where('ID_PRODUK', $request->ID_PRODUK)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        // 1. Simpan ke tabel Transaksi utama
-        $transaksi = Transaksi::create([
-            'nama_pembeli' => $request->nama_pembeli,
-            'status' => $request->status,
-            'total_harga' => $hargaProduk,
-        ]);
+            if ($produk->STOK < $request->JUMLAH) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'JUMLAH' => 'Stok produk tidak mencukupi.',
+                ]);
+            }
 
-        // 2. Simpan ke tabel TransaksiItem (jika modelnya ada)
-        if (class_exists(TransaksiItem::class)) {
-            TransaksiItem::create([
-                'transaksi_id' => $transaksi->id,
-                'produk_id' => $request->produk_id,
-                'qty' => 1,
-                'subtotal' => $hargaProduk,
+            $totalHarga = $produk->HARGA * $request->JUMLAH;
+
+            $pesanan = Pesanan::create([
+                'ID_USER' => $request->ID_USER,
+                'TANGGAL' => now()->toDateString(),
+                'TOTAL_HARGA' => $totalHarga,
+                'STATUS' => $request->STATUS,
             ]);
-        }
 
-        return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil ditambahkan!');
+            DetailPesanan::create([
+                'ID_PESANAN' => $pesanan->ID_PESANAN,
+                'ID_PRODUK' => $produk->ID_PRODUK,
+                'JUMLAH' => $request->JUMLAH,
+            ]);
+
+            $produk->decrement('STOK', $request->JUMLAH);
+        });
+
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Pesanan berhasil ditambahkan!');
     }
 
+    // Menampilkan detail pesanan
     public function show($id)
     {
-        $pesanan = Transaksi::with('items.produk')->findOrFail($id);
+        $pesanan = Pesanan::with([
+            'userRewear',
+            'detailPesanan.produk'
+        ])->findOrFail($id);
+
         return view('pesanan.show', compact('pesanan'));
     }
 
+    // Menampilkan form edit pesanan
     public function edit($id)
     {
-        $pesanan = Transaksi::findOrFail($id);
-        $produks = Produk::all();
-        return view('pesanan.edit', compact('pesanan', 'produks'));
+        $pesanan = Pesanan::with('userRewear')->findOrFail($id);
+        $users = UserRewear::all();
+
+        return view('pesanan.edit', compact('pesanan', 'users'));
     }
 
+    // Memperbarui pesanan
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_pembeli' => 'required|string|max:255',
-            'status' => 'required|string',
+            'ID_USER' => 'required|exists:user_rewear,ID_USER',
+            'STATUS' => 'required|in:Diproses,Dikirim,Selesai,Dibatalkan',
         ]);
 
-        $pesanan = Transaksi::findOrFail($id);
+        $pesanan = Pesanan::findOrFail($id);
+
         $pesanan->update([
-            'nama_pembeli' => $request->nama_pembeli,
-            'status' => $request->status,
+            'ID_USER' => $request->ID_USER,
+            'STATUS' => $request->STATUS,
         ]);
 
-        return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil diperbarui!');
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Pesanan berhasil diperbarui!');
     }
 
+    // Menghapus pesanan
     public function destroy($id)
     {
-        $pesanan = Transaksi::findOrFail($id);
-        
-        // Hapus item terkait terlebih dahulu jika ada relasi
-        if (method_exists($pesanan, 'items')) {
-            $pesanan->items()->delete();
-        }
-        
-        $pesanan->delete();
+        DB::transaction(function () use ($id) {
+            $pesanan = Pesanan::with('detailPesanan')->findOrFail($id);
 
-        return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil dihapus!');
+            foreach ($pesanan->detailPesanan as $detail) {
+                $produk = Produk::where('ID_PRODUK', $detail->ID_PRODUK)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($produk) {
+                    $produk->increment('STOK', $detail->JUMLAH);
+                }
+            }
+
+            $pesanan->detailPesanan()->delete();
+            $pesanan->delete();
+        });
+
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Pesanan berhasil dihapus!');
     }
 }

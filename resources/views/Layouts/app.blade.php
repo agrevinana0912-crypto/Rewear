@@ -40,6 +40,11 @@
 
                 <!-- Daftar Menu -->
                 <div class="hidden sm:flex items-center space-x-6">
+                    <a href="{{ route('products.index') }}" 
+                       class="text-sm font-medium transition flex items-center space-x-1.5 {{ request()->routeIs('products.*') ? 'text-rewear-primary font-semibold border-b-2 border-rewear-primary py-5' : 'text-gray-600 hover:text-rewear-primary' }}">
+                        <i class="fa-solid fa-shirt text-xs"></i>
+                        <span>Produk Saya</span>
+                    </a>
                     <a href="{{ route('pesanan.index') }}" 
                        class="text-sm font-medium transition flex items-center space-x-1.5 {{ request()->routeIs('pesanan.*') ? 'text-rewear-primary font-semibold border-b-2 border-rewear-primary py-5' : 'text-gray-600 hover:text-rewear-primary' }}">
                         <i class="fa-solid fa-bag-shopping text-xs"></i>
@@ -61,6 +66,30 @@
 
     <!-- Content Wrapper -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm flex items-center justify-between shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-center justify-between shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-exclamation text-red-600"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 

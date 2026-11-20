@@ -29,4 +29,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relasi ke produk preloved yang dijual oleh user
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

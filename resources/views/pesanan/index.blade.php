@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <!-- Tabel Data Pesanan (Dinamis dengan @forelse) -->
+    <!-- Tabel Data Pesanan (Dinamis) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -54,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
-                    @forelse($pesanans as $pesanan)
+                    @forelse ($pesanans as $pesanan)
                     <tr class="hover:bg-gray-50/50 transition">
                         <td class="py-3 px-4 font-medium text-rewear-dark">#RW-{{ str_pad($pesanan->id, 4, '0', STR_PAD_LEFT) }}</td>
                         <td class="py-3 px-4 text-gray-600">{{ $pesanan->nama_pembeli }}</td>

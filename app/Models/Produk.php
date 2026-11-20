@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Produk extends Model
+/**
+ * Model Produk (Alias/Ekstensi dari Product)
+ * Menjaga kompatibilitas fitur pesanan ReWear yang mengacu ke model Produk
+ * agar terhubung langsung ke tabel products.
+ */
+class Produk extends Product
 {
-    protected $table = 'produk';
-
-    public $timestamps = false;
+    protected $table = 'products';
 }

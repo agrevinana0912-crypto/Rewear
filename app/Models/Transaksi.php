@@ -11,7 +11,7 @@ class Transaksi extends Model
 
     // Ganti 'transaksis' di bawah ini dengan nama tabel yang benar di database Anda:
     // Contoh jika nama tabelnya 'transaksi':
-    protected $table = 'transaksi'; 
+    protected $table = 'transaksis'; 
     
     // Atau jika nama tabelnya 'pesanan':
     // protected $table = 'pesanan';

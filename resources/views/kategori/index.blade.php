@@ -206,11 +206,21 @@
 
                             <div class="flex justify-center items-center gap-3">
 
+                                <!-- Edit -->
                                 <a href="{{ route('kategori.edit', $item->id) }}"
                                    class="text-gray-500 hover:text-blue-600 transition"
                                    title="Edit kategori">
 
                                     <i class="fa-solid fa-pen-to-square text-base"></i>
+
+                                </a>
+
+                                <!-- Detail Kategori -->
+                                <a href="{{ route('kategori.show', $item->id) }}"
+                                   class="text-gray-500 hover:text-rewear-primary transition"
+                                   title="Lihat detail kategori">
+
+                                    <i class="fa-solid fa-eye text-base"></i>
 
                                 </a>
 

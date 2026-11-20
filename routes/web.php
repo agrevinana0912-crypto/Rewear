@@ -46,5 +46,4 @@ Route::get('/orders', [PesananController::class, 'index'])
     ->name('seller.orders');
 
 // CRUD Kategori
-Route::resource('kategori', KategoriController::class)
-    ->except(['show']);
+Route::resource('kategori', KategoriController::class);

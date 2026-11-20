@@ -49,6 +49,14 @@ class KategoriController extends Controller
             ->with('success', 'Kategori berhasil ditambahkan!');
     }
 
+    // Menampilkan detail kategori
+    public function show($id)
+    {
+        $kategori = Kategori::findOrFail($id);
+
+        return view('kategori.show', compact('kategori'));
+    }
+
     public function edit($id)
     {
         $kategori = Kategori::findOrFail($id);

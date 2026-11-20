@@ -1,15 +1,11 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\AuthController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes - ReWear
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\KategoriController;
 
 // Halaman utama
 Route::get('/', function () {
@@ -40,12 +36,16 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 });
 
-// CRUD Produk - Fitur teman
+// CRUD Produk
 Route::resource('products', ProductController::class);
 
-// CRUD Pesanan - Fitur kamu
+// CRUD Pesanan
 Route::resource('pesanan', PesananController::class);
 
 // Alias route orders
 Route::get('/orders', [PesananController::class, 'index'])
     ->name('seller.orders');
+
+// CRUD Kategori
+Route::resource('kategori', KategoriController::class)
+    ->except(['show']);
